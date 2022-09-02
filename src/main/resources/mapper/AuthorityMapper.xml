@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.demo12.mapper.AuthorityMapper">
+
+    <resultMap id="BaseResultMap" type="com.example.demo12.domain.Authority">
+            <id property="id" column="id" jdbcType="INTEGER"/>
+            <result property="describe" column="describe" jdbcType="CHAR"/>
+            <result property="status" column="status" jdbcType="TINYINT"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,describe,status
+    </sql>
+
+    <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List" />
+        from authority
+        where  id = #{id,jdbcType=INTEGER} 
+    </select>
+
+    <select id="searchAllByIdAuthorities" resultMap="BaseResultMap">
+        SELECT authority.* FROM authority INNER JOIN role_authority ON authority.id = role_authority.authority_id LEFT JOIN role ON role_authority.role_id = role.id  WHERE role.role = #{role} AND authority.`status` = 1
+    </select>
+
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+        delete from authority
+        where  id = #{id,jdbcType=INTEGER} 
+    </delete>
+    <insert id="insert" keyColumn="id" keyProperty="id" parameterType="com.example.demo12.domain.Authority" useGeneratedKeys="true">
+        insert into authority
+        ( id,describe,status
+        )
+        values (#{id,jdbcType=INTEGER},#{describe,jdbcType=CHAR},#{status,jdbcType=TINYINT}
+        )
+    </insert>
+    <insert id="insertSelective" keyColumn="id" keyProperty="id" parameterType="com.example.demo12.domain.Authority" useGeneratedKeys="true">
+        insert into authority
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+                <if test="id != null">id,</if>
+                <if test="describe != null">describe,</if>
+                <if test="status != null">status,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+                <if test="id != null">#{id,jdbcType=INTEGER},</if>
+                <if test="describe != null">#{describe,jdbcType=CHAR},</if>
+                <if test="status != null">#{status,jdbcType=TINYINT},</if>
+        </trim>
+    </insert>
+    <update id="updateByPrimaryKeySelective" parameterType="com.example.demo12.domain.Authority">
+        update authority
+        <set>
+                <if test="describe != null">
+                    describe = #{describe,jdbcType=CHAR},
+                </if>
+                <if test="status != null">
+                    status = #{status,jdbcType=TINYINT},
+                </if>
+        </set>
+        where   id = #{id,jdbcType=INTEGER} 
+    </update>
+    <update id="updateByPrimaryKey" parameterType="com.example.demo12.domain.Authority">
+        update authority
+        set 
+            describe =  #{describe,jdbcType=CHAR},
+            status =  #{status,jdbcType=TINYINT}
+        where   id = #{id,jdbcType=INTEGER} 
+    </update>
+</mapper>

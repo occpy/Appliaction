@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.demo12.mapper.UserInfoMapper">
+
+    <resultMap id="BaseResultMap" type="com.example.demo12.domain.UserInfo">
+            <id property="id" column="id" jdbcType="INTEGER"/>
+            <result property="userid" column="userid" jdbcType="INTEGER"/>
+            <result property="nickname" column="nickname" jdbcType="VARCHAR"/>
+            <result property="avatarUrl" column="avatar_url" jdbcType="VARCHAR"/>
+            <result property="gender" column="gender" jdbcType="INTEGER"/>
+            <result property="describe" column="describe" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,userid,nickname,
+        avatar_url,gender,`describe`
+    </sql>
+
+    <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List" />
+        from user_info
+        where  id = #{id,jdbcType=INTEGER} 
+    </select>
+
+    <select id="searchAllByUserid" parameterType="java.lang.Long" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List" />
+        from user_info
+        where  userid = #{userid,jdbcType=INTEGER}
+    </select>
+
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+        delete from user_info
+        where  id = #{id,jdbcType=INTEGER} 
+    </delete>
+    <insert id="insert" keyColumn="id" keyProperty="id" parameterType="com.example.demo12.domain.UserInfo" useGeneratedKeys="true">
+        insert into user_info
+        ( id,userid,nickname
+        ,avatar_url,gender,`describe`
+        )
+        values (#{id,jdbcType=INTEGER},#{userid,jdbcType=INTEGER},#{nickname,jdbcType=VARCHAR}
+        ,#{avatarUrl,jdbcType=VARCHAR},#{gender,jdbcType=INTEGER},#{describe,jdbcType=VARCHAR}
+        )
+    </insert>
+    <insert id="insertSelective" keyColumn="id" keyProperty="id" parameterType="com.example.demo12.domain.UserInfo" useGeneratedKeys="true">
+        insert into user_info
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+                <if test="id != null">id,</if>
+                <if test="userid != null">userid,</if>
+                <if test="nickname != null">nickname,</if>
+                <if test="avatarUrl != null">avatar_url,</if>
+                <if test="gender != null">gender,</if>
+                <if test="describe != null">`describe`,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+                <if test="id != null">#{id,jdbcType=INTEGER},</if>
+                <if test="userid != null">#{userid,jdbcType=INTEGER},</if>
+                <if test="nickname != null">#{nickname,jdbcType=VARCHAR},</if>
+                <if test="avatarUrl != null">#{avatarUrl,jdbcType=VARCHAR},</if>
+                <if test="gender != null">#{gender,jdbcType=INTEGER},</if>
+                <if test="describe != null">#{describe,jdbcType=VARCHAR},</if>
+        </trim>
+    </insert>
+    <update id="updateByPrimaryKeySelective" parameterType="com.example.demo12.domain.UserInfo">
+        update user_info
+        <set>
+                <if test="userid != null">
+                    userid = #{userid,jdbcType=INTEGER},
+                </if>
+                <if test="nickname != null">
+                    nickname = #{nickname,jdbcType=VARCHAR},
+                </if>
+                <if test="avatarUrl != null">
+                    avatar_url = #{avatarUrl,jdbcType=VARCHAR},
+                </if>
+                <if test="gender != null">
+                    gender = #{gender,jdbcType=INTEGER},
+                </if>
+                <if test="describe != null">
+                    `describe` = #{describe,jdbcType=VARCHAR},
+                </if>
+        </set>
+        where   id = #{id,jdbcType=INTEGER} 
+    </update>
+    <update id="updateByPrimaryKey" parameterType="com.example.demo12.domain.UserInfo">
+        update user_info
+        set 
+            userid =  #{userid,jdbcType=INTEGER},
+            nickname =  #{nickname,jdbcType=VARCHAR},
+            avatar_url =  #{avatarUrl,jdbcType=VARCHAR},
+            gender =  #{gender,jdbcType=INTEGER},
+            `describe` =  #{describe,jdbcType=VARCHAR}
+        where   id = #{id,jdbcType=INTEGER} 
+    </update>
+</mapper>

@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.demo12.mapper.UserInfoDefaultMapper">
+
+    <resultMap id="BaseResultMap" type="com.example.demo12.domain.UserInfoDefault">
+            <id property="id" column="id" jdbcType="INTEGER"/>
+            <result property="nickname" column="nickname" jdbcType="VARCHAR"/>
+            <result property="avatarUrl" column="avatar_url" jdbcType="VARCHAR"/>
+            <result property="gender" column="gender" jdbcType="INTEGER"/>
+            <result property="updateBy" column="update_by" jdbcType="INTEGER"/>
+            <result property="createBy" column="create_by" jdbcType="INTEGER"/>
+            <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
+            <result property="updateTime" column="update_time" jdbcType="TIMESTAMP"/>
+            <result property="describe" column="describe" jdbcType="VARCHAR"/>
+            <result property="defaultFlag" column="default_flag" jdbcType="TINYINT"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,nickname,avatar_url,
+        gender,update_by,create_by,
+        create_time,update_time,`describe`,
+        default_flag
+    </sql>
+
+    <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List" />
+        from user_info_default
+        where  id = #{id,jdbcType=INTEGER} 
+    </select>
+
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+        delete from user_info_default
+        where  id = #{id,jdbcType=INTEGER} 
+    </delete>
+    <insert id="insert" keyColumn="id" keyProperty="id" parameterType="com.example.demo12.domain.UserInfoDefault" useGeneratedKeys="true">
+        insert into user_info_default
+        ( id,nickname,avatar_url
+        ,gender,update_by,create_by
+        ,create_time,update_time,`describe`
+        ,default_flag)
+        values (#{id,jdbcType=INTEGER},#{nickname,jdbcType=VARCHAR},#{avatarUrl,jdbcType=VARCHAR}
+        ,#{gender,jdbcType=INTEGER},#{updateBy,jdbcType=INTEGER},#{createBy,jdbcType=INTEGER}
+        ,#{createTime,jdbcType=TIMESTAMP},#{updateTime,jdbcType=TIMESTAMP},#{describe,jdbcType=VARCHAR}
+        ,#{defaultFlag,jdbcType=TINYINT})
+    </insert>
+    <insert id="insertSelective" keyColumn="id" keyProperty="id" parameterType="com.example.demo12.domain.UserInfoDefault" useGeneratedKeys="true">
+        insert into user_info_default
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+                <if test="id != null">id,</if>
+                <if test="nickname != null">nickname,</if>
+                <if test="avatarUrl != null">avatar_url,</if>
+                <if test="gender != null">gender,</if>
+                <if test="updateBy != null">update_by,</if>
+                <if test="createBy != null">create_by,</if>
+                <if test="createTime != null">create_time,</if>
+                <if test="updateTime != null">update_time,</if>
+                <if test="describe != null">`describe`,</if>
+                <if test="defaultFlag != null">default_flag,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+                <if test="id != null">#{id,jdbcType=INTEGER},</if>
+                <if test="nickname != null">#{nickname,jdbcType=VARCHAR},</if>
+                <if test="avatarUrl != null">#{avatarUrl,jdbcType=VARCHAR},</if>
+                <if test="gender != null">#{gender,jdbcType=INTEGER},</if>
+                <if test="updateBy != null">#{updateBy,jdbcType=INTEGER},</if>
+                <if test="createBy != null">#{createBy,jdbcType=INTEGER},</if>
+                <if test="createTime != null">#{createTime,jdbcType=TIMESTAMP},</if>
+                <if test="updateTime != null">#{updateTime,jdbcType=TIMESTAMP},</if>
+                <if test="describe != null">#{describe,jdbcType=VARCHAR},</if>
+                <if test="defaultFlag != null">#{defaultFlag,jdbcType=TINYINT},</if>
+        </trim>
+    </insert>
+    <update id="updateByPrimaryKeySelective" parameterType="com.example.demo12.domain.UserInfoDefault">
+        update user_info_default
+        <set>
+                <if test="nickname != null">
+                    nickname = #{nickname,jdbcType=VARCHAR},
+                </if>
+                <if test="avatarUrl != null">
+                    avatar_url = #{avatarUrl,jdbcType=VARCHAR},
+                </if>
+                <if test="gender != null">
+                    gender = #{gender,jdbcType=INTEGER},
+                </if>
+                <if test="updateBy != null">
+                    update_by = #{updateBy,jdbcType=INTEGER},
+                </if>
+                <if test="createBy != null">
+                    create_by = #{createBy,jdbcType=INTEGER},
+                </if>
+                <if test="createTime != null">
+                    create_time = #{createTime,jdbcType=TIMESTAMP},
+                </if>
+                <if test="updateTime != null">
+                    update_time = #{updateTime,jdbcType=TIMESTAMP},
+                </if>
+                <if test="describe != null">
+                    `describe` = #{describe,jdbcType=VARCHAR},
+                </if>
+                <if test="defaultFlag != null">
+                    default_flag = #{defaultFlag,jdbcType=TINYINT},
+                </if>
+        </set>
+        where   id = #{id,jdbcType=INTEGER} 
+    </update>
+    <update id="updateByPrimaryKey" parameterType="com.example.demo12.domain.UserInfoDefault">
+        update user_info_default
+        set 
+            nickname =  #{nickname,jdbcType=VARCHAR},
+            avatar_url =  #{avatarUrl,jdbcType=VARCHAR},
+            gender =  #{gender,jdbcType=INTEGER},
+            update_by =  #{updateBy,jdbcType=INTEGER},
+            create_by =  #{createBy,jdbcType=INTEGER},
+            create_time =  #{createTime,jdbcType=TIMESTAMP},
+            update_time =  #{updateTime,jdbcType=TIMESTAMP},
+            `describe` =  #{describe,jdbcType=VARCHAR},
+            default_flag =  #{defaultFlag,jdbcType=TINYINT}
+        where   id = #{id,jdbcType=INTEGER} 
+    </update>
+
+    <select id="selectByDefaultFlog" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List" />
+        from user_info_default
+        where  default_flag = 1
+    </select>
+</mapper>

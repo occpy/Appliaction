@@ -6,7 +6,6 @@ import cn.dev33.satoken.util.SaResult;
 import cn.hutool.core.map.MapUtil;
 import com.example.demo12.annotation.RateLimiter;
 import com.example.demo12.annotation.SysAnnotation;
-import com.example.demo12.domain.User;
 import com.example.demo12.service.ISysUserService;
 import com.example.demo12.vo.UserAP;
 import com.example.demo12.vo.UserSignForm;
@@ -23,7 +22,6 @@ import java.util.concurrent.TimeUnit;
 
 
 @Api(tags = "用户系统")
-@SysAnnotation(name = "用户系统",value = "sysUser")
 @RestController
 @RequestMapping("sys-user")
 @RateLimiter(value = 50,timeout = 100, timeunit = TimeUnit.MILLISECONDS)
@@ -39,7 +37,8 @@ public class SysUserController {
      */
     @ApiOperation("用户登录")
     @PostMapping("doLogin")
-    public SaResult doLogin(@RequestBody UserAP userAP){
+    @SysAnnotation(name = "用户系统",value = "sysUser")
+    public SaResult doLogin(@Valid @ApiParam(name = "form",value = "登录表单") @RequestBody UserAP userAP){
         return iSysUserService.login(userAP);
     }
 
@@ -50,7 +49,8 @@ public class SysUserController {
      */
     @ApiOperation("用户注册")
     @PostMapping("doSign")
-    public  SaResult doSign(@ApiParam(name = "form",value = "注册表单") @RequestBody UserSignForm form) {
+    @SysAnnotation(name = "用户系统",value = "sysUser")
+    public  SaResult doSign(@Valid @ApiParam(name = "form",value = "注册表单") @RequestBody UserSignForm form) {
         return iSysUserService.sign(form);
     }
 
@@ -59,6 +59,7 @@ public class SysUserController {
      */
     @ApiOperation("用户在线状态")
     @GetMapping("isLogin")
+    @SysAnnotation(name = "用户系统",value = "sysUser")
     public SaResult isLogin(){
         return SaResult.ok().setData(StpUtil.isLogin());
     }
@@ -69,6 +70,7 @@ public class SysUserController {
      */
     @ApiOperation("用户退出")
     @PostMapping("doLogout")
+    @SysAnnotation(name = "用户系统",value = "sysUser")
     public SaResult doLogout(){
         StpUtil.logout();
         return SaResult.ok();
@@ -80,6 +82,7 @@ public class SysUserController {
      */
     @ApiOperation("用户信息")
     @GetMapping("info")
+    @SysAnnotation(name = "用户系统",value = "sysUser")
     public SaResult info(){
         Map<String,Object> stringObjectMap = MapUtil.builder(new HashMap<String,Object>())
                 .put("info",StpUtil.getExtra("info"))
@@ -88,5 +91,28 @@ public class SysUserController {
         return SaResult.ok().setData(stringObjectMap);
     }
 
+    /**
+     * 账号前置验证
+     */
+    @ApiOperation("密码修改-账号前置验证")
+    @PostMapping("PreVerification")
+    @SysAnnotation(name = "用户系统",value = "sysUser")
+    public SaResult PreVerification(@RequestParam @ApiParam(name = "email",required = true,value = "邮箱")String email,
+                                    @RequestParam @ApiParam(name = "code",required = true,value = "邮箱验证码") String code,
+                                    @RequestParam @ApiParam(name = "verifyCode",required = true,value = "验证码") String verifyCode,
+                                    @RequestParam @ApiParam(name = "verifyKey",required = true,value = "验证码key")String verifyKey){
+        return iSysUserService.preVerification(email,code,verifyCode,verifyKey);
+    }
 
+    /**
+     *
+     */
+    @ApiOperation("密码修改-账号后置验证")
+    @PostMapping("PostVerification")
+    @SysAnnotation(name = "用户系统",value = "sysUser")
+    public SaResult PostVerification(@RequestParam @ApiParam(name = "password",required = true,value = "密码")String password,
+                                    @RequestParam @ApiParam(name = "verifyPassword",required = true,value = "重复密码") String verifyPassword,
+                                    @RequestParam @ApiParam(name = "verifyKey",required = true,value = "关键key")String verifyKey){
+        return iSysUserService.postVerification(password,verifyPassword,verifyKey);
+    }
 }

@@ -41,10 +41,12 @@ public class SaTokenConfigure {
 
                     // 登录认证 -- 拦截所有路由，并排除/user/doLogin 用于开放登录
                     SaRouter.match("/**").notMatch(
+                            "/websocket/**",
                             "/sys-user/doLogin",
                             "/sys/lineCaptcha",
                             "/sys/sendEmailCode",
                             "/sys-user/doSign",
+                            "/sys-user/PreVerification",
                             "/doc.html/**",
                             "/v2/**",
                             "/swagger-resources/**",

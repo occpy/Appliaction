@@ -1,7 +1,6 @@
 package com.example.demo12.controller;
 
 import cn.dev33.satoken.util.SaResult;
-import com.example.demo12.annotation.AopAnnotation;
 import com.example.demo12.annotation.RateLimiter;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;

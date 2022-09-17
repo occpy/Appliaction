@@ -1,7 +1,8 @@
 package com.example.demo12.domain;
 
-import java.io.Serializable;
 import lombok.Data;
+
+import java.io.Serializable;
 
 /**
  * 权限表

@@ -62,6 +62,25 @@ spring:
         min-idle: 0
   profiles:
     active: hikari
+  # rabbit
+  rabbitmq:
+    addresses: 124.222.137.58
+    host: 5672
+    username: root
+    password: root
+    virtual-host: LinNet
+  data:
+    mongodb:
+      option:
+        socket-keep-alive: true
+        max-connection-idle-time: 6000
+      auto-index-creation: true
+      authentication-database: admin
+      host: 124.222.137.58
+      port: 27017
+      database: demo
+      username: root
+      password: '123456'
 mybatis:
   mapperLocations: classpath:mapper/**.xml
   typeAliasesPackage: com.example.demo12.domain

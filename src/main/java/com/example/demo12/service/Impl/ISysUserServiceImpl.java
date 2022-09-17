@@ -23,30 +23,32 @@ import com.example.demo12.utils.RedisCache;
 import com.example.demo12.vo.UserAP;
 import com.example.demo12.vo.UserSignForm;
 import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import javax.annotation.Resource;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
 @Service
+@Transactional(rollbackFor = Exception.class)
 public class ISysUserServiceImpl implements ISysUserService {
 
-    @Autowired
+    @Resource
     private UserMapper userMapper;
 
-    @Autowired
+    @Resource
     private RedisCache redisCache;
 
-    @Autowired
+    @Resource
     private UserInfoMapper userInfoMapper;
 
-    @Autowired
+    @Resource
     private UserRoleMapper userRoleMapper;
 
-    @Autowired
+    @Resource
     private UserInfoDefaultMapper userInfoDefaultMapper;
 
     /**
@@ -85,7 +87,7 @@ public class ISysUserServiceImpl implements ISysUserService {
     }
 
     /**
-     *
+     *  获取用户信息
      * @param id
      * @return
      */
@@ -120,7 +122,7 @@ public class ISysUserServiceImpl implements ISysUserService {
      * @param code
      * @param email
      */
-    @Async("verifyEmailCode")
+    @Async
     public void verifyEmailCode(String code,String email){
         if (redisCache.getCacheObject(Constants.EMAIL_CODE_KEY+email) != code ){
             throw new SaTokenException(ErrorType.VERIFY_CODE_ERROR.getMsg()).setCode(ErrorType.VERIFY_CODE_ERROR.getCode());
@@ -132,7 +134,7 @@ public class ISysUserServiceImpl implements ISysUserService {
      * 验证邮箱注册情况
      * @param email
      */
-    @Async("verifyEmailAccount")
+    @Async
     public void  verifyEmailAccount(String email){
         List<User> users = userMapper.selectAllByEmailOrUserOrUser(email);
         if (!users.isEmpty()){
@@ -145,7 +147,7 @@ public class ISysUserServiceImpl implements ISysUserService {
      * @param pass0
      * @param pass1
      */
-    @Async("verifyPassword")
+    @Async
     public void verifyPassword(String pass0,String pass1){
         if (!Objects.equals(pass0,pass1)){
             throw new SaTokenException(ErrorType.PASSWORD_UN_SAME.getMsg()).setCode(ErrorType.PASSWORD_UN_SAME.getCode());
@@ -179,7 +181,7 @@ public class ISysUserServiceImpl implements ISysUserService {
      * 角色
      * @param id
      */
-    @Async("insertRole")
+    @Async
     public void insertRole(Integer id){
         UserRole userRole = new UserRole();
         userRole.setUserId(id);
@@ -190,7 +192,7 @@ public class ISysUserServiceImpl implements ISysUserService {
      *
      * @param id
      */
-    @Async("insertUserInfo")
+    @Async
     public void insertUserInfo(Integer id){
         UserInfoDefault userInfoDefault = userInfoDefaultMapper.selectByDefaultFlog();
         UserInfo userInfo = new UserInfo();
@@ -200,10 +202,14 @@ public class ISysUserServiceImpl implements ISysUserService {
         userInfoMapper.insertSelective(userInfo);
     }
 
-
+    /**
+     * 注册
+     * @param form
+     * @return
+     */
     @Override
     public SaResult sign(UserSignForm form) {
-//        verifyEmailCode(form.getVerifyCode(), form.getEmail());
+        verifyEmailCode(form.getVerifyCode(), form.getEmail());
         verifyEmailAccount(form.getEmail());
         verifyPassword(form.getPassword(), form.getVerifyPassword());
         User user = new User();
@@ -217,6 +223,44 @@ public class ISysUserServiceImpl implements ISysUserService {
         insertRole(user.getId());
         insertUserInfo(user.getId());
 //        System.out.println(user.toString());
+        return SaResult.ok();
+    }
+
+    /**
+     * 密码修好前置验证
+     * @param email
+     * @param code
+     * @param verifyCode
+     * @param verifyKey
+     * @return
+     */
+    @Override
+    public SaResult preVerification(String email, String code, String verifyCode, String verifyKey) {
+        verifyEmailAccount(email);
+        verifyCode(verifyKey,verifyCode);
+        verifyEmailCode(code,email);
+        List<User> users = userMapper.selectAllByEmailOrUserOrUser(email);
+        User user = users.get(0);
+        Integer integer = generateId();
+        redisCache.setCacheObject(Constants.JWT_USERID + integer,user.getId());
+        return SaResult.ok().setData(integer);
+    }
+
+    /**
+     * 密码修改前置验证
+     * @param password
+     * @param verifyPassword
+     * @param verifyKey
+     * @return
+     */
+    @Override
+    public SaResult postVerification(String password, String verifyPassword, String verifyKey) {
+        verifyPassword(password,verifyPassword);
+        Integer cacheObject = (Integer) redisCache.getCacheObject(Constants.JWT_USERID + verifyKey);
+        User user = new User();
+        user.setId(cacheObject);
+        user.setPwd(password);
+        redisCache.deleteObject(Constants.JWT_USERID + verifyKey);
         return SaResult.ok();
     }
 

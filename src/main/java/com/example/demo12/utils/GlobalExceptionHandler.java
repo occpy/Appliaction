@@ -41,21 +41,21 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public SaResult methodArgumentNotValidHandler(MethodArgumentNotValidException exception) {
-        logger.error("MethodArgumentNotValidHandler",exception);
         List<FieldError> fieldErrors = exception.getBindingResult().getFieldErrors();
         String msg = fieldErrors.stream().findFirst().map(error -> String.format("%s: %s", error.getField(), error.getDefaultMessage())).orElse(null);
+        logger.error("MethodArgumentNotValidHandler:{}",msg);
         return SaResult.error(msg);
     }
 
     @ExceptionHandler(RuntimeException.class)
     public SaResult handleRuntimeException(RuntimeException e) {
-        logger.error("handleRuntimeException",e);
-        return SaResult.error("系统异常");
+        logger.error("handleRuntimeException:{}",e.getMessage());
+        return SaResult.error(e.getMessage());
     }
 
     @ExceptionHandler(Exception.class)
     public SaResult handleException(Exception e) {
-        logger.error("handleException",e);
+        logger.error("handleException:{}",e.getMessage());
         return SaResult.error("系统异常");
     }
 }

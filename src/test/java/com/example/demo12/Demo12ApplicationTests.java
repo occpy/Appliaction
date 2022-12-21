@@ -62,4 +62,24 @@ class Demo12ApplicationTests {
     }
 
 
+    @Test
+    public void insertsMg(){
+        Person person = new Person();
+        person.setName("asda");
+        person.setAge(123);
+        mongoTemplate.save(person);
+    }
+
+    @Test
+    public void selectInfo(){
+        Criteria criteria = Criteria.where("name").is("asda").andOperator(Criteria.where("age").ne(1));
+        Query query = new Query(criteria);
+//        List<T> ts = mongoTemplate.find(criteria, Person.class);
+        List<Person> people = mongoTemplate.find(query, Person.class);
+        people.stream().forEach(person -> {
+            System.out.println(person.toString());
+        });
+    }
+
+
 }

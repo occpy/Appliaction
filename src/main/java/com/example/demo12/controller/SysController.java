@@ -17,14 +17,16 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
 import javax.validation.constraints.Email;
+import java.io.File;
+import java.io.IOException;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -108,5 +110,47 @@ public class SysController {
         sendEmail(generate,mail);
         setCodeCache(generate,mail);
         return SaResult.ok();
+    }
+    @Value("${pro.uploadPath}")
+    private String fileRootPath;
+    /**
+     * 文件上传
+     * @param multipartFiles
+     * @return
+     */
+    @ApiOperation(value = "上传文件")
+    @PostMapping("uploadFile")
+    public SaResult UpLoadFile(@RequestParam("files")MultipartFile [] multipartFiles){
+        String filePath = "";
+
+        File file = new File(fileRootPath);
+        if (!file.exists() && !file.isDirectory()){
+            file.mkdirs();
+        }
+
+        for (MultipartFile multipartFile : multipartFiles) {
+                        // 上传简单文件名
+            String originalFilename = multipartFile.getOriginalFilename();
+            filePath = new StringBuilder().append(fileRootPath).append('\\')
+//                    .append(System.currentTimeMillis()).append('\\')
+                    .append(originalFilename).toString();
+            try {
+                // 保存文件
+                multipartFile.transferTo(new File(filePath));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+//        Arrays.stream(multipartFiles).forEach(multipartFile -> {
+//            // 上传简单文件名
+//            String originalFilename = multipartFile.getOriginalFilename();
+//            // 存储路径
+//            filePath = new StringBuilder(fileRootPath)
+//                    .append(System.currentTimeMillis())
+//                    .append(originalFilename)
+//                    .toString();
+////            System.out.println(multipartFile.getName());
+//        });
+     return SaResult.ok().setData(filePath);
     }
 }

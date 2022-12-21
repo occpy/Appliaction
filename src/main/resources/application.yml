@@ -38,6 +38,7 @@ spring:
   mvc:
     pathmatch:
       matching-strategy: ant_path_matcher
+
   # redis配置
   redis:
     # Redis数据库索引（默认为0）
@@ -81,12 +82,18 @@ spring:
       database: demo
       username: root
       password: '123456'
+  servlet:
+    multipart:
+      enabled: true
+      max-file-size: 10MB
+      max-request-size: 100MB
 mybatis:
   mapperLocations: classpath:mapper/**.xml
   typeAliasesPackage: com.example.demo12.domain
   configuration:
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
-
+pro:
+  uploadPath: d://image
 # 日志配置
 logging:
   config: classpath:logback-test.xml
